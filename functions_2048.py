@@ -1,7 +1,7 @@
 import keyboard as kb
-import random
-import time
-import copy
+import random, copy
+
+_score = 0
 
 #functions modify board in place
 
@@ -23,9 +23,10 @@ def initialize(board):
 #upward as long as spaces are empty. Once above space is not empty (or edge of the board), check if above space holds same value as
 #current space. If values are the same, merge.
 def move(board, dir) -> bool:
+    global _score
     original = copy.deepcopy(board)
     merged = []
-    if dir == "w": #up
+    if dir == "w" or dir == "up": #up
         for r in range(1, 4):
             for c in range(4):
                 if board[r][c] != 0:
@@ -37,12 +38,13 @@ def move(board, dir) -> bool:
                             temp -= 1
                         elif board[temp-1][c] == board[temp][c] and (temp-1, c) not in merged:
                             board[temp-1][c] *= 2
+                            _score += board[temp-1][c]
                             board[temp][c] = 0
                             merged.append((temp-1, c))
                         else:
                             break
                                 
-    if dir == "a": #left
+    if dir == "a" or dir == "left": #left
         for r in range(4):
             for c in range(1, 4):
                 if board[r][c] != 0:
@@ -54,12 +56,13 @@ def move(board, dir) -> bool:
                             temp -= 1
                         elif board[r][temp-1] == board[r][temp] and (r, temp-1) not in merged:
                             board[r][temp-1] *= 2
+                            _score += board[r][temp-1]
                             board[r][temp] = 0
                             merged.append((r, temp-1))
                         else:
                             break
 
-    if dir == "s": #down
+    if dir == "s" or dir == "down": #down
         for r in range(2, -1, -1):
             for c in range(4):
                 if board[r][c] != 0:
@@ -71,12 +74,13 @@ def move(board, dir) -> bool:
                             temp += 1
                         elif board[temp+1][c] == board[temp][c] and (temp+1, c) not in merged:
                             board[temp+1][c] *= 2
+                            _score += board[temp+1][c]
                             board[temp][c] = 0
                             merged.append((temp+1, c))
                         else:
                             break
 
-    if dir == "d": #right
+    if dir == "d" or dir == "right": #right
         for r in range(4):
             for c in range(2, -1, -1):
                 if board[r][c] != 0:
@@ -88,6 +92,7 @@ def move(board, dir) -> bool:
                             temp += 1
                         elif board[r][temp+1] == board[r][temp] and (r, temp+1) not in merged:
                             board[r][temp+1] *= 2
+                            _score += board[r][temp+1]
                             board[r][temp] = 0
                             merged.append((r, temp+1))
                         else:
@@ -125,7 +130,7 @@ def spawnNewTile(board):
                 empty.append((row, col))
     if len(empty) > 0:
         coord = random.choice(empty)
-        board[coord[0]][coord[1]] = random.choice([2]*6+[4])
+        board[coord[0]][coord[1]] = random.choice([2]*9+[4]) # 1/10 chance of 4
         del coord
     del empty
 
@@ -139,49 +144,5 @@ def display(board):
     print("\n")
 
 #score is the sum of all tiles
-def findScore(board) -> int:
-    score = 0
-    for row in board:
-        for val in row:
-            score += val
-
-    return score
-
-
-
-# ------------ MAIN ------------
-boardState = True
-
-#initialize the board
-board = [[],[],[],[]]
-for row in board:
-    for i in range(4):
-        row.append(0)
-
-initialize(board)
-
-#outer loop -> game is playing
-while boardState:
-    display(board)
-
-    #waiting for input
-    while True:
-        key = kb.read_key().lower()
-
-        if key == "w" or key == "a" or key == "s" or key == "d":
-            boardChanged = move(board, key)
-            break
-
-    #after input
-    if boardChanged:
-        spawnNewTile(board)
-
-    #after receiving input and performing actions
-    #sleep prevents accidental duplicate inputs
-    time.sleep(0.2)
-    boardState = checkBoardState(board)
-
-display(board)
-
-print("\nGame Over")
-print(f'Your score: {findScore(board)}')
+def getScore() -> int:
+    return _score
