@@ -22,7 +22,7 @@ while boardState:
 
     #waiting for input
     while True:
-        key = kb.read_key(suppress=True).lower()
+        key = kb.read_key().lower()
 
         if key in accepted_keys:
             boardChanged = move(board, key)
