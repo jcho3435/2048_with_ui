@@ -14,7 +14,7 @@ for row in board:
 
 initialize(board)
 
-kb.on_release_key("esc", handle_exit, suppress=True)
+kb.on_release_key("esc", handle_exit)
 
 #outer loop -> game is playing
 while boardState:
@@ -42,8 +42,6 @@ while boardState:
     boardState = checkBoardState(board)
 
 display(board)
-
-kb.on_release_key("esc", lambda key: None)
 
 print("\nGame Over")
 print(f'Your score: {getScore()}')
