@@ -2,6 +2,7 @@ import keyboard as kb
 import random, copy
 
 _score = 0
+_exit_key = False
 
 #functions modify board in place
 
@@ -146,3 +147,13 @@ def display(board):
 #score is the sum of all tiles
 def getScore() -> int:
     return _score
+
+
+def handle_exit(key):
+    print("Game exited (escape pressed)")
+    print(f"Score: {getScore()}")
+    global _exit_key
+    _exit_key = True
+
+def get_exit_key():
+    return _exit_key
